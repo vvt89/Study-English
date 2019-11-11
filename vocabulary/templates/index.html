@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Expand your vocabulary!</h1>
+
+  <p>Here you can measure and enlarge your English vocabulary</p>
+
+<h2>Dynamic content</h2>
+
+  <p>Your vocabulary information:</p>
+  <ul>
+    <li><strong>Words:</strong> {{ num_words }}</li>
+    <li><strong>Random word:</strong> {{ random_word }}</li>
+  </ul>
+
+{% endblock %}
