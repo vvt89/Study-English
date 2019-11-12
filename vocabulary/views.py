@@ -9,7 +9,10 @@ def index(request):
     """
     Функция отображения для домашней страницы сайта.
     """
-    file_name = 'D:/Projects/PythonStudy/studyenglish/vocabulary/english_vocabulary.sqlite'
+    #file_name = 'D:/Projects/PythonStudy/studyenglish/vocabulary/english_vocabulary.sqlite'
+    file_name = 'english_vocabulary.sqlite'
+    res = add_new_word(file_name, 'cat')
+    #print(res)
     random_word = get_random_word_from_the_last(file_name, 1)
 
     # Отрисовка HTML-шаблона index.html с данными внутри
@@ -17,5 +20,5 @@ def index(request):
     return render(
         request,
         'index.html',
-        context={'num_words': 1234, 'random_word': random_word},
+        context={'num_words': res[3]+1, 'random_word': random_word},
     )
