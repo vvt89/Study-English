@@ -9,6 +9,11 @@ def index(request):
     """
     Функция отображения для домашней страницы сайта.
     """
+
+    # Number of visits to this view, as counted in the session variable.
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
+
     #file_name = 'D:/Projects/PythonStudy/studyenglish/vocabulary/english_vocabulary.sqlite'
     file_name = 'english_vocabulary.sqlite'
     ## Uncomment to deploy to PythonAnywhere:
@@ -22,5 +27,5 @@ def index(request):
     return render(
         request,
         'index.html',
-        context={'num_words': res[3]+1, 'random_word': random_word},
+        context={'num_words': res[3]+1, 'random_word': random_word, 'num_visits': num_visits},
     )

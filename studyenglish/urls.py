@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('vocabulary/', include('vocabulary.urls')),
     path('', RedirectView.as_view(url='/vocabulary/', permanent=True)),
+    path('accounts/', include('django.contrib.auth.urls')),  # Authentication path
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) # включить размещение статических файлов
