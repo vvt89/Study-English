@@ -11,6 +11,8 @@ def index(request):
     """
     #file_name = 'D:/Projects/PythonStudy/studyenglish/vocabulary/english_vocabulary.sqlite'
     file_name = 'english_vocabulary.sqlite'
+    ## Uncomment to deploy to PythonAnywhere:
+    # file_name = '/home/vvt89/Study-English/' + file_name
     res = add_new_word(file_name, 'cat')
     #print(res)
     random_word = get_random_word_from_the_last(file_name, 1)
