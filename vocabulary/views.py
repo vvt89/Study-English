@@ -51,7 +51,7 @@ def index(request):
     return render(
         request,
         'index.html',
-        context={'num_words': res[3]+1, 'random_word': random_word, 'num_visits': num_visits, 'translations': translations},
+        context={'num_words': res[3]+1, 'random_word': random_word[0], 'num_visits': num_visits, 'translations': translations},
     )
 
 
