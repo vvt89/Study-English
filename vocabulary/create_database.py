@@ -9,6 +9,7 @@ def add_new_word(database_file, word):
 
     wordiscorrect = False
     words_match = True
+    word_number = None
     list_of_rows = []
     last_number = 0
 
@@ -60,6 +61,7 @@ def add_new_word(database_file, word):
             #print(row)
             if new_word == row[1]:
                 words_match = True
+                word_number = last_number
         #print("length of the base: ", counter)
 
         if words_match is False:  # Add new word
@@ -74,7 +76,36 @@ def add_new_word(database_file, word):
         list_of_rows = cur.fetchall()
 
     cur.close()
-    return wordiscorrect, words_match, list_of_rows, last_number,
+    return wordiscorrect, words_match, list_of_rows, last_number, word_number
+
+
+def add_translation(database_file, trans_database_file, word, translation):
+    wordiscorrect = False
+    res = add_new_word(database_file, word)
+    if res[0] is True:
+        wordiscorrect = True
+        if (res[1] is True) and (res[4] is not None) and (len(translation) > 0):
+            #trans_database_file = 'translations_' + database_file
+            conn = sqlite3.connect(trans_database_file)
+            try:
+                cur = conn.cursor()
+                params = (res[4], translation)
+                cur.execute('INSERT INTO Translations (id, word) VALUES(?,?)', params)
+                conn.commit()
+            except:
+                cur = conn.cursor()
+                cur.execute('CREATE TABLE Translations (id INTEGER, word TEXT)')
+                print('Database of translations has been created')
+                params = (res[4], translation)
+                cur.execute('INSERT INTO Translations (id, word) VALUES(?,?)', params)
+                conn.commit()
+            cur.execute('SELECT * FROM Translations')
+            list_of_rows = cur.fetchall()
+            for string in list_of_rows:
+                print(string)
+            cur.close()
+    return wordiscorrect
+
 
 
 def delete_word(database_file, input_word):
@@ -117,6 +148,7 @@ def get_random_word(database_file):
 
 def get_random_word_from_the_last(database_file, first_num):
     word = None
+    number = None
     conn = sqlite3.connect(database_file)
     cur = conn.cursor()
     cur.execute('SELECT * FROM Words')
@@ -129,13 +161,31 @@ def get_random_word_from_the_last(database_file, first_num):
         counter += 1
         if counter == last_number:
             word = i[1]
-    return word
+            number = i[0]
+    return word, number
+
+
+def get_translation_by_number(trans_file_name, number):
+    translations_list = []
+    conn = sqlite3.connect(trans_file_name)
+    try:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM Translations WHERE id = ?', (number,))
+        list_of_rows = cur.fetchall()
+        for string in list_of_rows:
+            translations_list.append(string[1])
+        cur.close()
+    except:
+        pass
+    return translations_list
+
 
 
 # main routine:
 if __name__ == "__main__":
     file_name = 'english_vocabulary.sqlite'
-    new_word = "derivative"
+    new_word = "cake"
+    '''
     res = add_new_word(file_name, new_word)
     if res[0] is False:
         print("Incorrect word")
@@ -147,6 +197,15 @@ if __name__ == "__main__":
     print("The last number is: ", res[3])
     random_word = get_random_word_from_the_last(file_name, 1)
     print("random word: ", random_word)
+    '''
+
+    trans_file_name = 'translations_english_vocabulary.sqlite'
+    add_translation(file_name, trans_file_name, new_word, '')
+    res = get_random_word_from_the_last(file_name, 0)
+    res1 = get_translation_by_number(trans_file_name, 411)
+    print(res)
+    print(res1)
+
     # delete_word(file_name, "wast")
     # Irregular Verbs located from 1033 to 1277
     # Do not uncomment if database already created:
@@ -155,3 +214,13 @@ if __name__ == "__main__":
     # cur.execute('DELETE FROM Words WHERE id = 617')
     # cur.execute('INSERT INTO Words (id, word) VALUES(?,?)', (181, "grandmother"))
     # conn.commit()
+
+    '''
+    file_name = 'databases/' + 'Vladimir1989' + '_english_vocabulary.sqlite'
+    conn = sqlite3.connect(file_name)
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE Words (id INTEGER, word TEXT)')
+    conn.commit()
+    cur.close()
+    res = add_new_word(file_name, 'cat')
+    '''
