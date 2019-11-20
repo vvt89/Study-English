@@ -6,4 +6,5 @@ from django.conf.urls import url
 urlpatterns = [
     path('', views.index, name='index'),  # Домашняя страница
     url(r'^add/$', views.add_new_word_from_form, name='add_new_word'),
+    url(r'^show/$', views.show_database, name='show_database'),
 ]

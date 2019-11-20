@@ -66,6 +66,7 @@ def add_new_word(database_file, word):
 
         if words_match is False:  # Add new word
             params = (last_number+1, new_word)
+            word_number = last_number+1
             cur.execute('INSERT INTO Words (id, word) VALUES(?,?)', params)
             conn.commit()
         else:
@@ -84,7 +85,7 @@ def add_translation(database_file, trans_database_file, word, translation):
     res = add_new_word(database_file, word)
     if res[0] is True:
         wordiscorrect = True
-        if (res[1] is True) and (res[4] is not None) and (len(translation) > 0):
+        if (res[4] is not None) and (len(translation) > 0):
             #trans_database_file = 'translations_' + database_file
             conn = sqlite3.connect(trans_database_file)
             try:
@@ -101,11 +102,10 @@ def add_translation(database_file, trans_database_file, word, translation):
                 conn.commit()
             cur.execute('SELECT * FROM Translations')
             list_of_rows = cur.fetchall()
-            for string in list_of_rows:
-                print(string)
+            #for string in list_of_rows:
+            #    print(string)
             cur.close()
     return wordiscorrect
-
 
 
 def delete_word(database_file, input_word):
@@ -180,11 +180,55 @@ def get_translation_by_number(trans_file_name, number):
     return translations_list
 
 
+def return_database_as_list(database_file, trans_file_name, number):
+
+    def make_filter(word_id):
+        def find_translations(data):
+            if data[0] == word_id:
+                return True
+            else:
+                return False
+        return find_translations
+
+    conn = sqlite3.connect(database_file)
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Words')
+    long_word_list = cur.fetchall()
+    cur.close()
+    required_word_list = long_word_list[max(0, len(long_word_list) - number):]
+    required_word_list.reverse()
+    #print(required_word_list)
+
+    conn = sqlite3.connect(trans_file_name)
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Translations')
+    long_translations_list = cur.fetchall()
+    cur.close()
+    #print(long_translations_list)
+
+    words_tranlations_list = []
+
+    for element in required_word_list:
+        word_id = element[0]
+        find_translations_by_number = make_filter(word_id)
+        transl_list = list(filter(find_translations_by_number, long_translations_list))
+        transl_string = ''
+        for j in transl_list:
+            transl_string += j[1]
+            transl_string += ', '
+        words_tranlations_list.append(element[1] + ' - ' + transl_string)
+
+    #print("Итоговый список")
+    #for i in words_tranlations_list:
+    #    print(i)
+
+    return words_tranlations_list
+
 
 # main routine:
 if __name__ == "__main__":
     file_name = 'english_vocabulary.sqlite'
-    new_word = "cake"
+    new_word = "forgery"
     '''
     res = add_new_word(file_name, new_word)
     if res[0] is False:
@@ -200,11 +244,15 @@ if __name__ == "__main__":
     '''
 
     trans_file_name = 'translations_english_vocabulary.sqlite'
-    add_translation(file_name, trans_file_name, new_word, '')
+    add_translation(file_name, trans_file_name, new_word, 'подлог')
     res = get_random_word_from_the_last(file_name, 0)
     res1 = get_translation_by_number(trans_file_name, 411)
     print(res)
     print(res1)
+
+
+    trans_file_name = 'translations_english_vocabulary.sqlite'
+    return_database_as_list(file_name, trans_file_name, 100)
 
     # delete_word(file_name, "wast")
     # Irregular Verbs located from 1033 to 1277

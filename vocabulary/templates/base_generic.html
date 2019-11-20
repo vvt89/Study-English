@@ -24,6 +24,7 @@
       <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Home</a></li>
           <li><a href="{% url 'add_new_word' %}">Add new word</a></li>
+		  <li><a href="{% url 'show_database' %}">Show vocabulary</a></li>
       </ul>
 	  <ul class="sidebar-nav">
 	   {% if user.is_authenticated %}

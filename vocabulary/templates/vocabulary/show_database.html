@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+    <h1>Vocabulary List</h1>
+
+    {% if list_of_translations %}
+    <ul>
+
+      {% for word in list_of_translations %}
+      <li>
+	    <em>{{word}}</em>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no words in the vocabulary.</p>
+    {% endif %}    
+
+{% endblock %}
